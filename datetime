@@ -1,0 +1,25 @@
+import pandas as pd
+import numpy as np
+import datetime
+import matplotlib.pyplot as plt
+
+alldata = pd.read_csv('1216343.csv')
+subset = alldata.loc[alldata['NAME'] ==
+                     'NY CITY CENTRAL PARK, NY US', ["DATE", "TMAX", "TMIN"]]
+subset['DATE'] = pd.to_datetime(subset['DATE'])
+subset['month'] = pd.to_datetime(subset['DATE']).dt.month
+
+# when agg with mean, date is dropped
+data2017 = subset[(subset['DATE'] >= datetime.datetime(2017, 1, 1)) & (
+    subset['DATE'] <= datetime.datetime(2017, 12, 31))].groupby('month').agg(np.mean)
+data_old = subset[(subset['DATE'] >= datetime.datetime(1989, 1, 1)) & (
+    subset['DATE'] <= datetime.datetime(2016, 12, 31))].groupby('month').agg(np.mean)
+
+plt.plot(data2017, '--')
+plt.plot(data_old)
+plt.legend(['2017 MAX', '2017 MIN', '1990-2016 MAX',
+            '1990-2016 MIN'], loc='upper left')
+plt.xlabel('Month')
+plt.ylabel('Temperature')
+
+plt.show()
